@@ -5,9 +5,15 @@ import 'izitoast/dist/css/iziToast.min.css';
 
 const form = document.querySelector('.form');
 const gallery = document.querySelector('.gallery');
-const loader = document.createElement('div');
-loader.classList.add('loader');
-document.body.appendChild(loader);
+const loader = document.querySelector('.loader');
+
+function showLoader() {
+  loader.style.display = 'block';
+}
+
+function hideLoader() {
+  loader.style.display = 'none';
+}
 
 form.addEventListener('submit', async e => {
   e.preventDefault();
@@ -22,30 +28,28 @@ form.addEventListener('submit', async e => {
     return;
   }
 
-  loader.style.display = 'block';
+  showLoader();
   gallery.innerHTML = '';
 
   try {
     const images = await fetchImages(query);
+    hideLoader();
 
     if (images.length === 0) {
       iziToast.error({
         title: '❌ No images found',
-        message:
-          'Sorry, there are no images matching your search query. Please try again!',
+        message: 'Try another search query!',
         position: 'topRight',
       });
     } else {
       renderGallery(images);
     }
   } catch (error) {
+    hideLoader();
     iziToast.error({
       title: '❌ Error',
-      message: 'Something went wrong while fetching images!',
+      message: 'Something went wrong!',
       position: 'topRight',
     });
-    console.error('Error fetching images:', error);
-  } finally {
-    loader.style.display = 'none';
   }
 });
